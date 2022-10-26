@@ -1,0 +1,17 @@
+{
+    "name": "shidatuo/taobao-top-sdk",
+    "description": "taobao-top-sdk unidesk相关api",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Shidatuo\\TaobaoTopSdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "zhouwang"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
