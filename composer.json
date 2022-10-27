@@ -4,7 +4,6 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Shidatuo\\TaobaoTopSdk\\": "src/",
             "TOP\\": "src/TOP"
         }
     },
