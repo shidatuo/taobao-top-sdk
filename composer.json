@@ -5,14 +5,14 @@
     "autoload": {
         "psr-4": {
             "Shidatuo\\TaobaoTopSdk\\": "src/",
-            "TOP\\": "src/top",
-            "homepage": "https://github.com/shidatuo"
+            "TOP\\": "src/TOP"
         }
     },
     "authors": [
         {
             "name": "zhouwang",
-            "email": "1003230257@qq.com"
+            "email": "1003230257@qq.com",
+            "homepage": "https://github.com/shidatuo"
         }
     ],
     "minimum-stability": "dev",
