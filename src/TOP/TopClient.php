@@ -202,7 +202,7 @@ class TopClient
 
 	public function execute($request, $session = null,$bestUrl = null)
 	{
-		$result =  new ResultSet();
+		$result = new ResultSet();
 		if($this->checkRequest) {
 			try {
 				$request->check();
@@ -212,7 +212,7 @@ class TopClient
 				return $result;
 			}
 		}
-		//组装系统参数
+		// 组装系统参数
 		$sysParams['app_key'] = $this->appkey;
 		$sysParams['v'] = $this->apiVersion;
 		$sysParams['format'] = $this->format;
@@ -221,23 +221,22 @@ class TopClient
 		$sysParams['timestamp'] = date("Y-m-d H:i:s");
 		if (null != $session)
 		{
-			$sysParams["session"] = $session;
+			$sysParams['session'] = $session;
 		}
 		$apiParams = array();
-		//获取业务参数
+		// 获取业务参数
 		$apiParams = $request->getApiParas();
 
-
-		//系统参数放入GET请求串
+		// 系统参数放入GET请求串
 		if($bestUrl){
-			$requestUrl = $bestUrl."?";
-			$sysParams["partner_id"] = $this->getClusterTag();
+			$requestUrl = $bestUrl . '?';
+			$sysParams['partner_id'] = $this->getClusterTag();
 		}else{
-			$requestUrl = $this->gatewayUrl."?";
+			$requestUrl = $this->gatewayUrl . '?';
 			$sysParams["partner_id"] = $this->sdkVersion;
 		}
-		//签名
-		$sysParams["sign"] = $this->generateSign(array_merge($apiParams, $sysParams));
+		// 签名
+		$sysParams['sign'] = $this->generateSign(array_merge($apiParams, $sysParams));
 
 		foreach ($sysParams as $sysParamKey => $sysParamValue)
 		{
@@ -258,16 +257,13 @@ class TopClient
 		$requestUrl = substr($requestUrl, 0, -1);
 
 		//发起HTTP请求
-		try
-		{
+		try {
 			if(count($fileFields) > 0){
 				$resp = $this->curl_with_memory_file($requestUrl, $apiParams, $fileFields);
 			}else{
 				$resp = $this->curl($requestUrl, $apiParams);
 			}
-		}
-		catch (\Exception $e)
-		{
+		} catch (\Exception $e) {
 			$result->code = $e->getCode();
 			$result->msg = $e->getMessage();
 			return $result;
@@ -277,58 +273,21 @@ class TopClient
 		unset($fileFields);
 		//解析TOP返回结果
 		$respWellFormed = false;
-		if ("json" == $this->format)
-		{
+		if ('json' == $this->format) {
 			$respObject = json_decode($resp);
-			if (null !== $respObject)
-			{
+			if (null !== $respObject) {
 				$respWellFormed = true;
-				foreach ($respObject as $propKey => $propValue)
-				{
+				foreach ($respObject as $propKey => $propValue) {
 					$respObject = $propValue;
 				}
 			}
-		}
-		else if("xml" == $this->format)
-		{
+		} else if('xml' == $this->format) {
 			$respObject = @simplexml_load_string($resp);
-			if (false !== $respObject)
-			{
+			if (false !== $respObject) {
 				$respWellFormed = true;
 			}
 		}
 		return $respObject;
-	}
-
-	public function exec($paramsArray)
-	{
-		if (!isset($paramsArray["method"]))
-		{
-			trigger_error("No api name passed");
-		}
-		$inflector = new LtInflector;
-		$inflector->conf["separator"] = ".";
-		$requestClassName = ucfirst($inflector->camelize(substr($paramsArray["method"], 7))) . "Request";
-		if (!class_exists($requestClassName))
-		{
-			trigger_error("No such api: " . $paramsArray["method"]);
-		}
-
-		$session = isset($paramsArray["session"]) ? $paramsArray["session"] : null;
-
-		$req = new $requestClassName;
-		foreach($paramsArray as $paraKey => $paraValue)
-		{
-			$inflector->conf["separator"] = "_";
-			$setterMethodName = $inflector->camelize($paraKey);
-			$inflector->conf["separator"] = ".";
-			$setterMethodName = "set" . $inflector->camelize($setterMethodName);
-			if (method_exists($req, $setterMethodName))
-			{
-				$req->$setterMethodName($paraValue);
-			}
-		}
-		return $this->execute($req, $session);
 	}
 
 	private function getClusterTag()
