@@ -1,5 +1,5 @@
 {
-    "name": "shidatuo/taobao-top-sdk",
+    "name": "unidesk/taobao-top-sdk",
     "description": "taobao-top-sdk unidesk相关api",
     "type": "library",
     "autoload": {
