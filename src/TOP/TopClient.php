@@ -200,46 +200,25 @@ class TopClient
 		return $reponse;
 	}
 
-	protected function logCommunicationError($apiName, $requestUrl, $errorCode, $responseTxt)
-	{
-		$localIp = isset($_SERVER["SERVER_ADDR"]) ? $_SERVER["SERVER_ADDR"] : "CLI";
-		$logger = new TopLogger;
-		$logger->conf["log_file"] = rtrim(TOP_SDK_WORK_DIR, '\\/') . '/' . "logs/top_comm_err_" . $this->appkey . "_" . date("Y-m-d") . ".log";
-		$logger->conf["separator"] = "^_^";
-		$logData = array(
-		date("Y-m-d H:i:s"),
-		$apiName,
-		$this->appkey,
-		$localIp,
-		PHP_OS,
-		$this->sdkVersion,
-		$requestUrl,
-		$errorCode,
-		str_replace("\n","",$responseTxt)
-		);
-		$logger->log($logData);
-	}
-
 	public function execute($request, $session = null,$bestUrl = null)
 	{
 		$result =  new ResultSet();
 		if($this->checkRequest) {
 			try {
 				$request->check();
-			} catch (Exception $e) {
-
+			} catch (\Exception $e) {
 				$result->code = $e->getCode();
 				$result->msg = $e->getMessage();
 				return $result;
 			}
 		}
 		//组装系统参数
-		$sysParams["app_key"] = $this->appkey;
-		$sysParams["v"] = $this->apiVersion;
-		$sysParams["format"] = $this->format;
-		$sysParams["sign_method"] = $this->signMethod;
-		$sysParams["method"] = $request->getApiMethodName();
-		$sysParams["timestamp"] = date("Y-m-d H:i:s");
+		$sysParams['app_key'] = $this->appkey;
+		$sysParams['v'] = $this->apiVersion;
+		$sysParams['format'] = $this->format;
+		$sysParams['sign_method'] = $this->signMethod;
+		$sysParams['method'] = $request->getApiMethodName();
+		$sysParams['timestamp'] = date("Y-m-d H:i:s");
 		if (null != $session)
 		{
 			$sysParams["session"] = $session;
@@ -287,9 +266,8 @@ class TopClient
 				$resp = $this->curl($requestUrl, $apiParams);
 			}
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			$this->logCommunicationError($sysParams["method"],$requestUrl,"HTTP_ERROR_" . $e->getCode(),$e->getMessage());
 			$result->code = $e->getCode();
 			$result->msg = $e->getMessage();
 			return $result;
@@ -318,26 +296,6 @@ class TopClient
 			{
 				$respWellFormed = true;
 			}
-		}
-
-		//返回的HTTP文本不是标准JSON或者XML，记下错误日志
-		if (false === $respWellFormed)
-		{
-			$this->logCommunicationError($sysParams["method"],$requestUrl,"HTTP_RESPONSE_NOT_WELL_FORMED",$resp);
-			$result->code = 0;
-			$result->msg = "HTTP_RESPONSE_NOT_WELL_FORMED";
-			return $result;
-		}
-
-		//如果TOP返回了错误码，记录到业务错误日志中
-		if (isset($respObject->code))
-		{
-			$logger = new TopLogger;
-			$logger->conf["log_file"] = rtrim(TOP_SDK_WORK_DIR, '\\/') . '/' . "logs/top_biz_err_" . $this->appkey . "_" . date("Y-m-d") . ".log";
-			$logger->log(array(
-				date("Y-m-d H:i:s"),
-				$resp
-			));
 		}
 		return $respObject;
 	}
