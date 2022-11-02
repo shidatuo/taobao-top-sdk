@@ -21,7 +21,7 @@ class TopAuthTokenRefreshRequest
 
     public function setRefreshToken($refreshToken)
     {
-        $this->refreshToken = $refreshToken;
+        $this->refreshToken              = $refreshToken;
         $this->apiParas["refresh_token"] = $refreshToken;
     }
 
