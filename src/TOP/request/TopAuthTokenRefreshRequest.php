@@ -5,50 +5,34 @@ namespace TOP\request;
 use TOP\RequestCheckUtil;
 
 /**
- * TOP API: taobao.top.auth.token.create request
+ * TOP API: taobao.top.auth.token.refresh request
  *
  * @author auto create
- * @since 1.0, 2022.09.19
+ * @since 1.0, 2021.11.26
  */
-class TopAuthTokenCreateRequest
+class TopAuthTokenRefreshRequest
 {
     /**
-     * 授权code，grantType==authorization_code 时需要
+     * grantType==refresh_token 时需要
      **/
-    private $code;
-
-    /**
-     * 与生成code的uuid配对
-     **/
-    private $uuid;
+    private $refreshToken;
 
     private $apiParas = array();
 
-    public function setCode($code)
+    public function setRefreshToken($refreshToken)
     {
-        $this->code = $code;
-        $this->apiParas["code"] = $code;
+        $this->refreshToken = $refreshToken;
+        $this->apiParas["refresh_token"] = $refreshToken;
     }
 
-    public function getCode()
+    public function getRefreshToken()
     {
-        return $this->code;
-    }
-
-    public function setUuid($uuid)
-    {
-        $this->uuid = $uuid;
-        $this->apiParas["uuid"] = $uuid;
-    }
-
-    public function getUuid()
-    {
-        return $this->uuid;
+        return $this->refreshToken;
     }
 
     public function getApiMethodName()
     {
-        return "taobao.top.auth.token.create";
+        return "taobao.top.auth.token.refresh";
     }
 
     public function getApiParas()
@@ -58,7 +42,7 @@ class TopAuthTokenCreateRequest
 
     public function check()
     {
-        RequestCheckUtil::checkNotNull($this->code,"code");
+        RequestCheckUtil::checkNotNull($this->refreshToken,"refreshToken");
     }
 
     public function putOtherTextParam($key, $value) {
